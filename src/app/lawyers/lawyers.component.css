@@ -1,0 +1,19 @@
+.name-container {
+  margin-left: 10px;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cards-container > * {
+  margin: 5px;
+  width: 300px;
+  float: left;
+}
+
+.chart-container {
+  width: 300px;
+}

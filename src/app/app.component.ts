@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoginComponent } from './core/auth/login.component';
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +10,27 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  @ViewChild('loginDialog') loginDialog: LoginComponent;
+  loggedUserData: firebase.User = <firebase.User>{};
+
+  constructor(private router: Router, public afAuth: AngularFireAuth) {
+    this.afAuth.authState.subscribe((data) => this.loggedUserData = data);
+  }
+
+  showLoginDialog() {
+    this.loginDialog.openDialog();
+  }
+
+  navigateToHome() {
+    this.router.navigate(['./']);
+  }
+
+  logout() {
+    this.afAuth.auth.signOut();
+    this.router.navigate(['/']);
+  }
+
+  goToMyProfile() {
+    this.router.navigate(['lawyers', this.loggedUserData.uid]);
+  }
 }

@@ -1,0 +1,4 @@
+Style adding is not explained
+
+
+<span igxButton="raised" igxButtonColor="yellow" igxButtonBackground="#000">Click me<span> - make it </span> - error ocurres aftrer coptying

@@ -1,0 +1,19 @@
+<igx-dialog #form
+            title="Sign In"
+            leftButtonLabel="Cancel"
+            (onLeftButtonSelect)="form.close()"
+            (onRightButtonSelect)="basicLogin()"
+            rightButtonLabel="Sign In"
+            closeOnOutsideSelect="true">
+  <div class="igx-form-group">
+    <input type="email" igxInput [(ngModel)]="email"/>
+    <label igxLabel>Email</label>
+  </div>
+  <div class="igx-form-group">
+    <input type="text" igxInput [(ngModel)]="password"/>
+    <label igxLabel>Password</label>
+  </div>
+
+  <div (click)="googleLogin()" igxButton="raised" igxButtonBackground="red"><img src="../../../assets/google-plus-icon.png" alt="google plus icon"/> Sign in with Google Plus</div>
+
+</igx-dialog>
