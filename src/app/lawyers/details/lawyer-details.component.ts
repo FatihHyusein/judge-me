@@ -1,9 +1,10 @@
-import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { IgxToast } from 'igniteui-js-blocks/main';
 import DocumentData = firebase.firestore.DocumentData;
-import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   templateUrl: './lawyer-details.component.html',
@@ -11,8 +12,11 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   encapsulation: ViewEncapsulation.None
 })
 export class LawyerDetailsComponent {
+  @ViewChild('toast') toast: IgxToast;
+
   lawyer: DocumentData;
   phoneNumber: number;
+  displayName: string;
   myForm: FormGroup;
   docRef: DocumentData;
 
@@ -26,7 +30,8 @@ export class LawyerDetailsComponent {
           .then(doc => {
             this.lawyer = doc.data();
             this.myForm = new FormGroup({
-              phoneNumber: new FormControl(this.lawyer.phoneNumber, Validators.required)
+              phoneNumber: new FormControl(this.lawyer.phoneNumber, Validators.required),
+              displayName: new FormControl(this.lawyer.displayName, Validators.required)
             });
           })
           .catch(error => {
@@ -36,10 +41,27 @@ export class LawyerDetailsComponent {
     });
   }
 
+  onImageChange(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+      this.lawyer.photoURL = reader.result;
+    });
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit(): void {
     this.docRef.set({
-      phoneNumber: this.myForm.controls['phoneNumber'].value
-    }, { merge: true });
+      phoneNumber: this.myForm.controls['phoneNumber'].value,
+      displayName: this.myForm.controls['displayName'].value,
+      photoURL: this.lawyer.photoURL
+    }, { merge: true }).then(() => {
+      this.toast.show();
+    });
   }
 
 }

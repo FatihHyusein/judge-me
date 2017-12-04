@@ -1,4 +1,43 @@
-form {
-  width: 40%;
+.lawyer-profile-form {
+  max-width: 800px;
   margin: auto;
+}
+
+.photo-uploader-container,
+.photo-uploader-container > label {
+  cursor: pointer;
+  max-width: 150px;
+  min-width: 150px;
+  height: 150px;
+}
+
+.photo-uploader-container > label {
+  display: flex;
+  background-size: contain;
+  background-repeat: no-repeat;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 0.7;
+}
+
+.photo-uploader-container > label:hover {
+  opacity: 1;
+}
+
+.personal-info-container,
+.photo-uploader-container {
+  float: left;
+  vertical-align: middle;
+}
+
+.personal-info-container {
+  width: 70%;
+  max-width: 500px;
+  min-width: 300px;
+}
+
+.photo-uploader-container {
+  width: 20%;
+  margin-right: 20px;
 }

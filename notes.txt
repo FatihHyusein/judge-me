@@ -2,3 +2,9 @@ Style adding is not explained
 
 
 <span igxButton="raised" igxButtonColor="yellow" igxButtonBackground="#000">Click me<span> - make it </span> - error ocurres aftrer coptying
+
+
+toast positioning  - could not use it
+
+example form would be great
+dropdown component
