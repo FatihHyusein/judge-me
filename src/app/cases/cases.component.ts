@@ -16,9 +16,20 @@ export class CasesComponent {
     this.casesCollection = db.collection('cases');
     this.cases$ = this.casesCollection.valueChanges();
     this.cases$.subscribe(data => this.casesData = data);
+  }
 
+  beDefendant(caseId) {
+    // this.casesCollection.doc(data.uid).set()
+    //   .then(() => {
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //   });
 
-    // collection.update(data)
-    // collection.delete()
+    console.log(this.casesData[caseId]);
+  }
+
+  bePlantiff(caseId) {
+    console.log(this.casesData[caseId]);
   }
 }

@@ -1,6 +1,17 @@
 <igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="6">
   <igx-column [field]="'title'" [sortable]="true" [header]="'Title'" [filtering]="true"></igx-column>
   <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
+  <igx-column [field]="'defendant'" [sortable]="true" [header]="'Defendant'">
+    <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
+      <button (click)="beDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="!item">Be the defendant</button>
+      <button igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="item">{{item}}</button>
+    </ng-template>
+  </igx-column>
+  <igx-column [field]="'plaintiff'" [sortable]="true" [header]="'Plaintiff'">
+    <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
+      <button (click)="bePlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336" *ngIf="!item">Be the plaintiff</button>
+      <button igxButton="raised"  igxButtonBackground="#F44336" *ngIf="item">{{item}}</button>
+    </ng-template>
+  </igx-column>
 </igx-grid>
-
 
