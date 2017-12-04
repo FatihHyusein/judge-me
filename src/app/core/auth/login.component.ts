@@ -34,20 +34,20 @@ export class LoginComponent {
   }
 
   googleLogin() {
-    this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then((data: firebase.User) => {
+    this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then((data) => {
       this.loginDialog.close();
-      this.addToUsersIfDontExist(data);
+      this.addToUsersIfDontExist(data.user);
     });
   }
 
   addToUsersIfDontExist(data): void {
-    const docRef = this.lawyersCollection.doc(data.user.uid).ref;
+    const docRef = this.lawyersCollection.doc(data.uid).ref;
 
     this.model = {
-      photoURL: data.user.photoURL,
-      displayName: data.user.displayName,
-      email: data.user.email,
-      phoneNumber: data.user.phoneNumber,
+      photoURL: data.photoURL,
+      displayName: data.displayName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
       wins: 0,
       loses: 0
     };
@@ -55,7 +55,7 @@ export class LoginComponent {
     docRef.get()
       .then(doc => {
         if (!doc.exists) {
-          this.lawyersCollection.doc(data.user.uid).set(this.model)
+          this.lawyersCollection.doc(data.uid).set(this.model)
             .then(() => {
             })
             .catch(error => {
