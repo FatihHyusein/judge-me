@@ -15,12 +15,21 @@
       </div>
     </igx-card-content>
     <igx-card-actions>
-      <button igxButton [attr.title]="lawyer.email">
+      <button igxButton [attr.title]="lawyer.email" (click)="confirmAction({action: sendMail, data: lawyer.email})">
         <igx-icon fontSet="material" name="email"></igx-icon> <div class="action-btn-label">{{ lawyer.email }}</div>
       </button>
-      <button igxButton [attr.title]="lawyer.phoneNumber">
+      <button igxButton [attr.title]="lawyer.phoneNumber" [disabled]="!lawyer.phoneNumber" (click)="confirmAction({action: startPhoneCall, data: lawyer.phoneNumber})">
         <igx-icon fontSet="material" name="call"></igx-icon> <div class="action-btn-label">{{ lawyer.phoneNumber || 'not available' }}</div>
       </button>
     </igx-card-actions>
   </igx-card>
+</div>
+
+<div class="snackbar-container">
+  <igx-snackbar #snackbar
+                message="Please, confirm your action"
+                autoHide="true"
+                actionText="OK"
+                (onAction)="callConfirmedAction()">
+  </igx-snackbar>
 </div>
