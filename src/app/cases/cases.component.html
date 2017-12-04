@@ -3,15 +3,24 @@
   <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
   <igx-column [field]="'defendant'" [sortable]="true" [header]="'Defendant'">
     <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
-      <button (click)="beDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="!item">Be the defendant</button>
-      <button igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="item">{{item}}</button>
+      <button (click)="beDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="!item"
+              [disabled]="casesData[ri].plaintiff?.uid == afAuth.auth?.currentUser?.uid">Be the defendant</button>
+      <button igxButton="raised"  igxButtonBackground="#4CAF50" *ngIf="item" [routerLink]="['/lawyers', item.uid]">{{item.name}}</button>
+
+      <button (click)="cancelDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"
+              *ngIf="item && item?.uid == afAuth.auth?.currentUser?.uid">Cancel</button>
     </ng-template>
   </igx-column>
   <igx-column [field]="'plaintiff'" [sortable]="true" [header]="'Plaintiff'">
     <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
-      <button (click)="bePlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336" *ngIf="!item">Be the plaintiff</button>
-      <button igxButton="raised"  igxButtonBackground="#F44336" *ngIf="item">{{item}}</button>
+      <button (click)="bePlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336" *ngIf="!item"
+              [disabled]="casesData[ri]?.defendant?.uid == afAuth.auth?.currentUser?.uid">Be the plaintiff</button>
+      <button igxButton="raised"  igxButtonBackground="#F44336" *ngIf="item" [routerLink]="['/lawyers', item.uid]">{{item.name}}</button>
+
+      <button (click)="cancelPlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336"
+              *ngIf="item && item?.uid == afAuth.auth?.currentUser?.uid">Cancel</button>
     </ng-template>
   </igx-column>
 </igx-grid>
 
+<igx-toast #toast message="Successfully updated!"></igx-toast>
