@@ -1,1 +1,10 @@
-<h1>Laywer</h1>
+<form *ngIf="myForm" [formGroup]="myForm" (ngSubmit)="onSubmit()" class="input-sample" style="width: 40%; margin: auto">
+  <h4>Personal Info</h4>
+  <div class="igx-form-group">
+    <input name="phoneNumber" id="phoneNumber" required="" type="number" class="igx-form-group__input igx-form-group__input--filled"
+           formControlName="phoneNumber">
+    <label for="phoneNumber" class="igx-form-group__label">Phone Number*</label>
+  </div>
+  <button [disabled]="!myForm.valid" type="submit" igxbutton="raised" igxripple="white" role="button"
+          [ngClass]="myForm.valid ?'igx-button--raised':'igx-button--flat igx-button--disabled'">Confirm</button>
+</form>

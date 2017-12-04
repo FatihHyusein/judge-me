@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
+import {ReactiveFormsModule} from '@angular/forms';
 
 import { ChartsModule } from 'ng2-charts';
 import { LawyersComponent } from './lawyers.component';
@@ -14,7 +15,8 @@ import { LawyerDetailsComponent } from './details/lawyer-details.component';
   imports: [
     LawyersRoutingModule,
     SharedModule,
-    ChartsModule
+    ChartsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [LawyersComponent]

@@ -16,7 +16,6 @@ export class LoginComponent {
   email;
   password;
   lawyersCollection;
-
   model: LawyerModel;
 
   constructor(public afAuth: AngularFireAuth, private db: AngularFirestore) {
@@ -36,13 +35,14 @@ export class LoginComponent {
 
   googleLogin() {
     this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then((data: firebase.User) => {
-      console.log('data: ', data);
       this.loginDialog.close();
       this.addToUsersIfDontExist(data);
     });
   }
 
   addToUsersIfDontExist(data): void {
+    const docRef = this.lawyersCollection.doc(data.user.uid).ref;
+
     this.model = {
       photoURL: data.user.photoURL,
       displayName: data.user.displayName,
@@ -52,14 +52,21 @@ export class LoginComponent {
       loses: 0
     };
 
-    this.db.collection('users').doc(data.user.uid).set(this.model)
-      .then(result => {
-        console.log('result: ', result);
+    docRef.get()
+      .then(doc => {
+        if (!doc.exists) {
+          this.lawyersCollection.doc(data.user.uid).set(this.model)
+            .then(() => {
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        } else {
+          console.log('User already exists!');
+        }
       })
-      .catch(error => {
-        console.error(error);
+      .catch(function(error) {
+        console.log('Error getting document:', error);
       });
-
-    this.lawyersCollection.add(this.model); // not needed
   }
 }
