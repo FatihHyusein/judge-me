@@ -17,3 +17,9 @@
 .chart-container {
   width: 300px;
 }
+
+.action-btn-label {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
