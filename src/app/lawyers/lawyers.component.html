@@ -3,7 +3,7 @@
     <igx-card-header>
       <igx-avatar [src]="lawyer.photoURL" roundShape="true">
       </igx-avatar>
-      <span class="name-container">{{ lawyer.displayName }}</span>
+      <span class="name-container">{{ lawyer.displayName || lawyer.email }}</span>
     </igx-card-header>
     <igx-card-content>
       <div class="chart-container">
@@ -19,7 +19,7 @@
         <igx-icon fontSet="material" name="email"></igx-icon> {{ lawyer.email }}
       </button>
       <button igxButton>
-        <igx-icon fontSet="material" name="call"></igx-icon> {{ lawyer.phoneNumber }}
+        <igx-icon fontSet="material" name="call"></igx-icon> {{ lawyer.phoneNumber || 'not available' }}
       </button>
     </igx-card-actions>
   </igx-card>
