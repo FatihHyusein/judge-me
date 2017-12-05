@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { CaseModel } from './CaseModel';
@@ -19,10 +19,11 @@ export class CasesComponent {
 
   constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
     this.afAuth.auth.onAuthStateChanged((data) => {
-      console.log('data: ', data);
+
       if (data) {
         this.currentUser = this.afAuth.auth.currentUser;
-        console.log('this.currentUser: ', this.currentUser);
+      } else {
+        this.currentUser = null;
       }
     });
 
