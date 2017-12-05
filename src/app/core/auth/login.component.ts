@@ -68,6 +68,7 @@ export class LoginComponent {
 
     docRef.get()
       .then(doc => {
+        console.log('doc: ', doc);
         if (!doc.exists) {
           this.lawyersCollection.doc(data.uid).set(this.model)
             .then(() => {

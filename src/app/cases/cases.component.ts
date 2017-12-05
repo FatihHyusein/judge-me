@@ -4,6 +4,7 @@ import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } fr
 import { CaseModel } from './CaseModel';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { IgxToast } from 'igniteui-js-blocks/main';
+import {User} from 'firebase';
 
 @Component({
   templateUrl: './cases.component.html',
@@ -14,8 +15,17 @@ export class CasesComponent {
   casesCollection: AngularFirestoreCollection<CaseModel>;
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
+  currentUser;
 
   constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
+    this.afAuth.auth.onAuthStateChanged((data) => {
+      console.log('data: ', data);
+      if (data) {
+        this.currentUser = this.afAuth.auth.currentUser;
+        console.log('this.currentUser: ', this.currentUser);
+      }
+    });
+
     this.casesCollection = db.collection('cases');
     this.cases$ = this.casesCollection.snapshotChanges();
     this.cases$.subscribe(data => {
@@ -27,11 +37,15 @@ export class CasesComponent {
   }
 
   beDefendant(caseRow) {
-    this.getCaseSide(caseRow, 'defendant');
+    if (this.currentUser) {
+      this.getCaseSide(caseRow, 'defendant');
+    }
   }
 
   bePlantiff(caseRow) {
-    this.getCaseSide(caseRow, 'plaintiff');
+    if (this.currentUser) {
+      this.getCaseSide(caseRow, 'plaintiff');
+    }
   }
 
   cancelDefendant(caseRow) {
@@ -45,8 +59,8 @@ export class CasesComponent {
   getCaseSide(caseRow, side) {
     this.casesCollection.doc(this.casesData[caseRow].id).set(Object.assign(this.casesData[caseRow], {
       [side]: {
-        uid: this.afAuth.auth.currentUser.uid,
-        name: this.afAuth.auth.currentUser.displayName || this.afAuth.auth.currentUser.email
+        uid: this.currentUser.uid,
+        name: this.currentUser.displayName || this.afAuth.auth.currentUser.email
       }
     }))
       .then(() => {
@@ -59,7 +73,10 @@ export class CasesComponent {
 
   cancelCaseSide(caseRow, side) {
     this.casesCollection.doc(this.casesData[caseRow].id).set(Object.assign(this.casesData[caseRow], {
-      [side]: null
+      [side]: {
+        uid: '',
+        name: ''
+      }
     }))
       .then(() => {
         this.toast.show();
