@@ -3,7 +3,7 @@ import { IgxDialog } from 'igniteui-js-blocks/main';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import { AngularFirestore } from 'angularfire2/firestore';
-import {LawyerModel} from '../../lawyers/LawyerModel';
+import { LawyerModel } from '../../lawyers/LawyerModel';
 
 @Component({
   selector: 'app-login-component',
@@ -12,12 +12,12 @@ import {LawyerModel} from '../../lawyers/LawyerModel';
 
 })
 export class LoginComponent {
-  @ViewChild('form') loginDialog: IgxDialog;
+  @ViewChild('loginForm') loginDialog: IgxDialog;
+  @ViewChild('registrationForm') registrationForm: IgxDialog;
   email;
   password;
   lawyersCollection;
   model: LawyerModel;
-  isUserRegistered = false;
 
   constructor(public afAuth: AngularFireAuth, private db: AngularFirestore) {
     this.lawyersCollection = db.collection('users');
@@ -27,8 +27,18 @@ export class LoginComponent {
     this.loginDialog.open();
   }
 
-  closeDialog() {
-    this.isUserRegistered = false;
+  openRegisterForm() {
+    this.loginDialog.close();
+    this.registrationForm.open();
+  }
+
+  openLoginDialog() {
+    this.registrationForm.close();
+    this.loginDialog.open();
+  }
+
+  closeDialog(dialog) {
+    dialog.close();
     this.email = '';
     this.password = '';
   }
@@ -80,7 +90,7 @@ export class LoginComponent {
           console.log('User already exists!');
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error getting document:', error);
       });
   }

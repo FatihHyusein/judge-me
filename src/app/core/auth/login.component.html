@@ -1,10 +1,10 @@
-<igx-dialog *ngIf="!isUserRegistered" #form
+<igx-dialog #registrationForm
             title="Register"
             leftButtonLabel="Cancel"
-            (onLeftButtonSelect)="form.close()"
+            (onLeftButtonSelect)="registrationForm.close()"
             (onRightButtonSelect)="createUser()"
             rightButtonLabel="Register"
-            (onClose)="closeDialog()"
+            (onClose)="closeDialog(registrationForm)"
             closeOnOutsideSelect="true">
   <div class="igx-form-group">
     <input type="email" igxInput [(ngModel)]="email"/>
@@ -15,17 +15,16 @@
     <label igxLabel>Password</label>
   </div>
 
-  <div (click)="isUserRegistered = true" igxButton="raised" igxButtonBackground="red">Already have an account</div>
 
 </igx-dialog>
 
-<igx-dialog *ngIf="isUserRegistered" #form
+<igx-dialog #loginForm
             title="Sign In"
             leftButtonLabel="Cancel"
-            (onLeftButtonSelect)="form.close()"
+            (onLeftButtonSelect)="loginForm.close()"
             (onRightButtonSelect)="basicLogin()"
             rightButtonLabel="Sign In"
-            (onClose)="closeDialog()"
+            (onClose)="closeDialog(loginForm)"
             closeOnOutsideSelect="true">
   <div class="igx-form-group">
     <input type="email" igxInput [(ngModel)]="email"/>
@@ -35,6 +34,8 @@
     <input type="text" igxInput [(ngModel)]="password"/>
     <label igxLabel>Password</label>
   </div>
+
+  <div (click)="openRegisterForm()" igxButton="raised" igxButtonBackground="red">You do not have an account?</div>
 
   <div (click)="googleLogin()" igxButton="raised" igxButtonBackground="red"><img src="../../../assets/google-plus-icon.png" alt="google plus icon"/> Sign in with Google Plus</div>
 
