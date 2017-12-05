@@ -17,6 +17,7 @@ export class LoginComponent {
   password;
   lawyersCollection;
   model: LawyerModel;
+  isUserRegistered = false;
 
   constructor(public afAuth: AngularFireAuth, private db: AngularFirestore) {
     this.lawyersCollection = db.collection('users');
@@ -24,6 +25,19 @@ export class LoginComponent {
 
   openDialog() {
     this.loginDialog.open();
+  }
+
+  closeDialog() {
+    this.isUserRegistered = false;
+    this.email = '';
+    this.password = '';
+  }
+
+  createUser() {
+    this.afAuth.auth.createUserWithEmailAndPassword(this.email, this.password).then((data: firebase.User) => {
+      this.loginDialog.close();
+      this.addToUsersIfDontExist(data);
+    });
   }
 
   basicLogin() {
