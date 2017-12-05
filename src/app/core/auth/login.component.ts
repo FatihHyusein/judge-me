@@ -45,7 +45,7 @@ export class LoginComponent {
 
   createUser() {
     this.afAuth.auth.createUserWithEmailAndPassword(this.email, this.password).then((data: firebase.User) => {
-      this.loginDialog.close();
+      this.registrationForm.close();
       this.addToUsersIfDontExist(data);
     });
   }
