@@ -6,6 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IgxToast } from 'igniteui-js-blocks/main';
 import DocumentData = firebase.firestore.DocumentData;
 import {AngularFireAuth} from 'angularfire2/auth';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   templateUrl: './lawyer-details.component.html',
@@ -20,9 +21,10 @@ export class LawyerDetailsComponent implements OnDestroy {
   displayName: string;
   myForm: FormGroup;
   docRef: DocumentData;
+  routeParamsSubscription: Subscription;
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, public afAuth: AngularFireAuth, private ref: ChangeDetectorRef) {
-    this.route.params.subscribe((params) => {
+    this.routeParamsSubscription = this.route.params.subscribe((params) => {
       if (params.lawyerId) {
         this.docRef = db.collection('users').doc(params.lawyerId).ref;
 
@@ -35,7 +37,9 @@ export class LawyerDetailsComponent implements OnDestroy {
             });
 
             this.afAuth.auth.onAuthStateChanged((data) => {
-              this.ref.detectChanges();
+              if (!this.ref['destroyed']) {
+                this.ref.detectChanges();
+              }
 
               if (!data || (data && this.afAuth.auth.currentUser.uid !== params.lawyerId)) {
                 this.myForm.disable();
@@ -53,6 +57,7 @@ export class LawyerDetailsComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.ref.detach();
+    this.routeParamsSubscription.unsubscribe();
   }
 
   onImageChange(e) {
