@@ -50,7 +50,9 @@ export class CasesComponent {
             .then(doc => {
               const docData = doc.data();
 
-              if (!docData.cases || !(caseItemData.id in docData.cases)) {
+              if ((doc.id === caseItemData.defendant.uid || doc.id === caseItemData.plaintiff.uid)
+                  && (!docData.cases || !(caseItemData.id in docData.cases))) {
+
                 defendant.set(
                   {
                     cases: {[caseItemData.id]: defendantResult},
@@ -78,7 +80,16 @@ export class CasesComponent {
                             loses: loses
                           }, {merge: true});
                       });
-                });
+                  });
+              }
+          });
+
+          plaintiff.ref.get()
+            .then(doc => {
+              const docData = doc.data();
+
+              if ((doc.id === caseItemData.defendant.uid || doc.id === caseItemData.plaintiff.uid)
+                  && (!docData.cases || !(caseItemData.id in docData.cases))) {
 
                 plaintiff.set(
                   {
@@ -110,7 +121,8 @@ export class CasesComponent {
                   });
               }
 
-            });
+          });
+
         }
 
       });
