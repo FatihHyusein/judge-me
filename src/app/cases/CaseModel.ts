@@ -4,4 +4,5 @@ export interface CaseModel {
   defendant: object;
   plaintiff: object;
   status: string;
+  winProbability: number;
 }

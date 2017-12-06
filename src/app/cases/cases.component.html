@@ -1,6 +1,12 @@
 <igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="6">
   <igx-column [field]="'title'" [sortable]="true" [header]="'Title'" [filtering]="true"></igx-column>
   <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
+  <igx-column [field]="'winProbability'" [header]="'Win Probability'">
+    <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
+      <igx-linear-bar [striped]="false" [value]="item" [max]="100">
+      </igx-linear-bar>
+    </ng-template>
+  </igx-column>
   <igx-column [field]="'defendant'" [sortable]="true" [header]="'Defendant'">
     <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
       <button (click)="beDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"

@@ -4,18 +4,23 @@ import { FormsModule } from '@angular/forms';
 
 import {
   IgxAvatarModule,
+  IgxBadgeModule,
   IgxButtonModule,
   IgxCardModule,
   IgxDialogModule,
   IgxGridModule,
   IgxIconModule,
-  IgxIcon,
   IgxInput,
-  IgxNavbarModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule, NavigationDrawerModule
+  IgxNavbarModule,
+  IgxProgressBarModule,
+  IgxSnackbarModule,
+  IgxToastModule,
+  NavigationDrawerModule
 } from 'igniteui-js-blocks/main';
 
 const IgxModules = [IgxGridModule, IgxNavbarModule, IgxDialogModule,
-  IgxButtonModule, IgxCardModule, IgxAvatarModule, IgxInput, IgxIconModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule, NavigationDrawerModule];
+  IgxButtonModule, IgxCardModule, IgxAvatarModule, IgxInput, IgxIconModule, IgxSnackbarModule,
+  IgxToastModule, IgxBadgeModule, NavigationDrawerModule, IgxProgressBarModule];
 
 @NgModule({
   imports: [CommonModule, ...IgxModules],
