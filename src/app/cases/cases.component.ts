@@ -40,7 +40,7 @@ export class CasesComponent {
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
-        this.casesSrv.updateLawyerStats(caseItem, this.usersCollection, this.casesCollection);
+        this.casesSrv.updateLawyerStats(caseItemData, this.usersCollection);
       });
     });
   }

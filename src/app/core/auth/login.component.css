@@ -2,3 +2,11 @@ img {
   width: 25px;
   vertical-align: text-bottom;
 }
+
+.open-register-btn, .google-login-btn {
+  width: 100%;
+}
+
+.open-register-btn {
+  margin-bottom: 5px;
+}
