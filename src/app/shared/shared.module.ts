@@ -11,11 +11,11 @@ import {
   IgxIconModule,
   IgxIcon,
   IgxInput,
-  IgxNavbarModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule
+  IgxNavbarModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule, NavigationDrawerModule
 } from 'igniteui-js-blocks/main';
 
 const IgxModules = [IgxGridModule, IgxNavbarModule, IgxDialogModule,
-  IgxButtonModule, IgxCardModule, IgxAvatarModule, IgxInput, IgxIconModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule];
+  IgxButtonModule, IgxCardModule, IgxAvatarModule, IgxInput, IgxIconModule, IgxSnackbarModule, IgxToastModule, IgxBadgeModule, NavigationDrawerModule];
 
 @NgModule({
   imports: [CommonModule, ...IgxModules],

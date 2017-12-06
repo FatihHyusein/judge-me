@@ -8,3 +8,7 @@ toast positioning  - could not use it
 
 example form would be great
 dropdown component
+
+
+NavigationDrawerModule - inconsistent (missing igx prefix)
+igx-nav-drawer - documentation doesnt match the reality, hard to reproduce the same component, as shown in the document
