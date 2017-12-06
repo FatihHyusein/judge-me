@@ -5,6 +5,7 @@ import { CaseModel } from './CaseModel';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { IgxToast } from 'igniteui-js-blocks/main';
 import {User} from 'firebase';
+import {CasesService} from './cases.service';
 
 @Component({
   templateUrl: './cases.component.html',
@@ -19,7 +20,7 @@ export class CasesComponent {
   currentUser;
   caseIds: Array<string> = [];
 
-  constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
+  constructor(private db: AngularFirestore, public afAuth: AngularFireAuth, private casesSrv: CasesService) {
     this.afAuth.auth.onAuthStateChanged((data) => {
 
       if (data) {
@@ -39,84 +40,7 @@ export class CasesComponent {
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
-
-        if (caseItemData.status) {
-          const defendant = this.usersCollection.doc(caseItemData.defendant.uid);
-          const plaintiff = this.usersCollection.doc(caseItemData.plaintiff.uid);
-          const defendantResult = caseItemData.status === caseItemData.defendant.uid ? 'wins' : 'loses';
-          const plaintiffResult = caseItemData.status === caseItemData.plaintiff.uid ? 'wins' : 'loses';
-
-          defendant.ref.get()
-            .then(doc => {
-              const docData = doc.data();
-
-              defendant.set(
-                {
-                  cases: {[caseItemData.id]: defendantResult},
-                }, {merge: true})
-                .then(() => {
-                  defendant.ref.get()
-                    .then(newDoc => {
-                      const defendantCases = newDoc.data().cases;
-                      let wins = 0;
-                      let loses = 0;
-
-                      for (let result in defendantCases) {
-                        if (defendantCases[result] === 'wins') {
-                          wins++;
-                        }
-                        if (defendantCases[result] === 'loses') {
-                          loses++;
-                        }
-                      }
-
-
-                      defendant.set(
-                        {
-                          wins: wins,
-                          loses: loses
-                        }, {merge: true});
-                    });
-                });
-          });
-
-          plaintiff.ref.get()
-            .then(doc => {
-              const docData = doc.data();
-
-              plaintiff.set(
-                {
-                  cases: {[caseItemData.id]: plaintiffResult},
-                }, {merge: true})
-                .then(() => {
-                  plaintiff.ref.get()
-                    .then(newDoc => {
-                      const plaintiffCases = newDoc.data().cases;
-                      let wins = 0;
-                      let loses = 0;
-
-                      for (let result in plaintiffCases) {
-                        if (plaintiffCases[result] === 'wins') {
-                          wins++;
-                        }
-                        if (plaintiffCases[result] === 'loses') {
-                          loses++;
-                        }
-                      }
-
-
-                      plaintiff.set(
-                        {
-                          wins: wins,
-                          loses: loses
-                        }, {merge: true});
-                    });
-                });
-
-          });
-
-        }
-
+        this.casesSrv.updateLawyerStats(caseItem, this.usersCollection, this.casesCollection);
       });
     });
   }
