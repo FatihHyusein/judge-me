@@ -17,6 +17,7 @@ export class CasesComponent {
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
   currentUser;
+  caseIds: Array<string> = [];
 
   constructor(private db: AngularFirestore, public afAuth: AngularFireAuth) {
     this.afAuth.auth.onAuthStateChanged((data) => {
@@ -33,17 +34,82 @@ export class CasesComponent {
     this.cases$ = this.casesCollection.snapshotChanges();
     this.cases$.subscribe(data => {
       this.casesData = [];
+      this.caseIds = [];
+
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
 
         if (caseItemData.status) {
-          this.usersCollection.doc(caseItemData.status).ref.get()
+          const defendant = this.usersCollection.doc(caseItemData.defendant.uid);
+          const plaintiff = this.usersCollection.doc(caseItemData.plaintiff.uid);
+          const defendantResult = caseItemData.status === caseItemData.defendant.uid ? 'wins' : 'loses';
+          const plaintiffResult = caseItemData.status === caseItemData.plaintiff.uid ? 'wins' : 'loses';
+
+          defendant.ref.get()
             .then(doc => {
               const docData = doc.data();
 
-              this.usersCollection.doc(caseItemData.status).set(Object.assign(doc.data(),
-                {win: parseInt(docData.wins, 10) + 1}));
+              if (!docData.cases || !(caseItemData.id in docData.cases)) {
+                defendant.set(
+                  {
+                    cases: {[caseItemData.id]: defendantResult},
+                  }, {merge: true})
+                  .then(() => {
+                    defendant.ref.get()
+                      .then(newDoc => {
+                        const defendantCases = newDoc.data().cases;
+                        let wins = 0;
+                        let loses = 0;
+
+                        for (let result in defendantCases) {
+                          if (defendantCases[result] === 'wins') {
+                            wins++;
+                          }
+                          if (defendantCases[result] === 'loses') {
+                            loses++;
+                          }
+                        }
+
+
+                        defendant.set(
+                          {
+                            wins: wins,
+                            loses: loses
+                          }, {merge: true});
+                      });
+                });
+
+                plaintiff.set(
+                  {
+                    cases: {[caseItemData.id]: plaintiffResult},
+                  }, {merge: true})
+                  .then(() => {
+                    plaintiff.ref.get()
+                      .then(newDoc => {
+                        const plaintiffCases = newDoc.data().cases;
+                        let wins = 0;
+                        let loses = 0;
+
+                        for (let result in plaintiffCases) {
+                          if (plaintiffCases[result] === 'wins') {
+                            wins++;
+                          }
+                          if (plaintiffCases[result] === 'loses') {
+                            loses++;
+                          }
+                        }
+
+
+                        plaintiff.set(
+                          {
+                            wins: wins,
+                            loses: loses
+                          }, {merge: true});
+                      });
+                  });
+              }
+
             });
         }
 
