@@ -10,6 +10,11 @@ igx-nav-drawer {
   position: fixed;
   right: 0;
   top: 60px;
+  z-index: -199;
+}
+
+igx-nav-drawer.isOpen {
+  z-index: 1;
 }
 
 .nav-item {
@@ -79,3 +84,4 @@ igx-nav-drawer {
 .ig-nav-drawer {
   width: 300px !important;
 }
+

@@ -6,7 +6,7 @@
   <span igxButton="flat" [routerLink]="['/lawyers']">Lawyers</span>
 
   <div *ngIf="afAuth.authState | async; else showLogin">
-    <igx-icon class="cpointer" fontSet="material" name="more_vert" (click)="open = !open"></igx-icon>
+    <igx-icon class="cpointer" fontSet="material" name="more_vert" (click)="isNavDrawerOpen = !isNavDrawerOpen"></igx-icon>
   </div>
 
   <ng-template #showLogin>
@@ -18,13 +18,12 @@
 
 <app-login-component #loginDialog></app-login-component>
 
-<igx-nav-drawer id="ID" (opened)="logEvent($event)" *ngIf="loggedUserData"
-                [position]="'left'"
+<igx-nav-drawer *ngIf="loggedUserData"
+                [position]="'right'"
                 [enableGestures]='true'
-                [isOpen]="open"
-                [pin]="true"
-                [width]="'300px'"
-                [miniWidth]="'300px'">
+                [isOpen]="isNavDrawerOpen"
+                [pin]="true" [class.isOpen]="isNavDrawerOpen"
+                (closed)="isNavDrawerOpen = false">
   <div class="ig-drawer-content">
     <nav class="nav">
       <span class="nav-item header">Hello {{ loggedUserData.displayName || loggedUserData.email}}!</span>
