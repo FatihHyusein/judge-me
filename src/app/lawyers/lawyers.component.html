@@ -16,7 +16,7 @@
     </igx-card-content>
     <igx-card-actions>
       <button igxButton [attr.title]="lawyer.email" (click)="confirmAction({action: sendMail, data: lawyer.email})">
-        <igx-icon fontSet="material" name="email"></igx-icon> <div class="action-btn-label">{{ lawyer.email }}</div>
+        <igx-icon fontSet="material" name="email"></igx-icon> <div class="action-btn-label">{{ lawyer.email || 'not available'}}</div>
       </button>
       <button igxButton [attr.title]="lawyer.phoneNumber" [disabled]="!lawyer.phoneNumber" (click)="confirmAction({action: startPhoneCall, data: lawyer.phoneNumber})">
         <igx-icon fontSet="material" name="call"></igx-icon> <div class="action-btn-label">{{ lawyer.phoneNumber || 'not available' }}</div>
