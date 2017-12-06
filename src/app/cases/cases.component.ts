@@ -50,76 +50,68 @@ export class CasesComponent {
             .then(doc => {
               const docData = doc.data();
 
-              if ((doc.id === caseItemData.defendant.uid || doc.id === caseItemData.plaintiff.uid)
-                  && (!docData.cases || !(caseItemData.id in docData.cases))) {
+              defendant.set(
+                {
+                  cases: {[caseItemData.id]: defendantResult},
+                }, {merge: true})
+                .then(() => {
+                  defendant.ref.get()
+                    .then(newDoc => {
+                      const defendantCases = newDoc.data().cases;
+                      let wins = 0;
+                      let loses = 0;
 
-                defendant.set(
-                  {
-                    cases: {[caseItemData.id]: defendantResult},
-                  }, {merge: true})
-                  .then(() => {
-                    defendant.ref.get()
-                      .then(newDoc => {
-                        const defendantCases = newDoc.data().cases;
-                        let wins = 0;
-                        let loses = 0;
-
-                        for (let result in defendantCases) {
-                          if (defendantCases[result] === 'wins') {
-                            wins++;
-                          }
-                          if (defendantCases[result] === 'loses') {
-                            loses++;
-                          }
+                      for (let result in defendantCases) {
+                        if (defendantCases[result] === 'wins') {
+                          wins++;
                         }
+                        if (defendantCases[result] === 'loses') {
+                          loses++;
+                        }
+                      }
 
 
-                        defendant.set(
-                          {
-                            wins: wins,
-                            loses: loses
-                          }, {merge: true});
-                      });
-                  });
-              }
+                      defendant.set(
+                        {
+                          wins: wins,
+                          loses: loses
+                        }, {merge: true});
+                    });
+                });
           });
 
           plaintiff.ref.get()
             .then(doc => {
               const docData = doc.data();
 
-              if ((doc.id === caseItemData.defendant.uid || doc.id === caseItemData.plaintiff.uid)
-                  && (!docData.cases || !(caseItemData.id in docData.cases))) {
+              plaintiff.set(
+                {
+                  cases: {[caseItemData.id]: plaintiffResult},
+                }, {merge: true})
+                .then(() => {
+                  plaintiff.ref.get()
+                    .then(newDoc => {
+                      const plaintiffCases = newDoc.data().cases;
+                      let wins = 0;
+                      let loses = 0;
 
-                plaintiff.set(
-                  {
-                    cases: {[caseItemData.id]: plaintiffResult},
-                  }, {merge: true})
-                  .then(() => {
-                    plaintiff.ref.get()
-                      .then(newDoc => {
-                        const plaintiffCases = newDoc.data().cases;
-                        let wins = 0;
-                        let loses = 0;
-
-                        for (let result in plaintiffCases) {
-                          if (plaintiffCases[result] === 'wins') {
-                            wins++;
-                          }
-                          if (plaintiffCases[result] === 'loses') {
-                            loses++;
-                          }
+                      for (let result in plaintiffCases) {
+                        if (plaintiffCases[result] === 'wins') {
+                          wins++;
                         }
+                        if (plaintiffCases[result] === 'loses') {
+                          loses++;
+                        }
+                      }
 
 
-                        plaintiff.set(
-                          {
-                            wins: wins,
-                            loses: loses
-                          }, {merge: true});
-                      });
-                  });
-              }
+                      plaintiff.set(
+                        {
+                          wins: wins,
+                          loses: loses
+                        }, {merge: true});
+                    });
+                });
 
           });
 
