@@ -13,6 +13,7 @@ import {User} from 'firebase';
 export class CasesComponent {
   @ViewChild('toast') toast: IgxToast;
   casesCollection: AngularFirestoreCollection<CaseModel>;
+  usersCollection: AngularFirestoreCollection<CaseModel>;
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
   currentUser;
@@ -27,12 +28,25 @@ export class CasesComponent {
       }
     });
 
+    this.usersCollection = db.collection('users');
     this.casesCollection = db.collection('cases');
     this.cases$ = this.casesCollection.snapshotChanges();
     this.cases$.subscribe(data => {
       this.casesData = [];
       data.forEach((caseItem) => {
-        this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItem.payload.doc.data()));
+        const caseItemData = caseItem.payload.doc.data();
+        this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
+
+        if (caseItemData.status) {
+          this.usersCollection.doc(caseItemData.status).ref.get()
+            .then(doc => {
+              const docData = doc.data();
+
+              this.usersCollection.doc(caseItemData.status).set(Object.assign(doc.data(),
+                {win: parseInt(docData.wins, 10) + 1}));
+            });
+        }
+
       });
     });
   }
