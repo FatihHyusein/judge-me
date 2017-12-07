@@ -5,5 +5,5 @@
 .add-case {
   display: inline-block;
   float: right;
-  margin-right: 30px;
+  margin: 0 30px 30px;
 }

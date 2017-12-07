@@ -7,6 +7,7 @@ import {IgxDialog, IgxToast} from 'igniteui-js-blocks/main';
 import {User} from 'firebase';
 import {CasesService} from './cases.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import * as firebase from 'firebase/app';
 
 @Component({
   templateUrl: './cases.component.html',
@@ -43,9 +44,33 @@ export class CasesComponent {
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
-        console.log('this.casesData: ', this.casesData);
         this.casesSrv.updateLawyerStats(caseItemData, this.usersCollection);
       });
+
+      this.usersCollection.snapshotChanges().subscribe(userData => {
+        userData.forEach(userItem => {
+          const userItemData = userItem.payload.doc.data();
+          const userUid = userItem.payload.doc.id;
+
+          if (userItemData.cases) {
+            const userCases = userItemData.cases;
+            const casesNames = this.casesData.map(element => {
+              return element.id;
+            });
+
+            Object.keys(userCases).forEach(caseName => {
+              if (casesNames.indexOf(caseName) === -1) {
+                const userRef = this.usersCollection.doc(userUid);
+                userRef.update({
+                  cases: firebase.firestore.FieldValue.delete()
+                });
+              }
+            });
+          }
+
+        });
+      });
+
     });
 
     this.createAddCaseForm();
@@ -69,10 +94,11 @@ export class CasesComponent {
 
   onAddCaseSubmit() {
     if (this.casesCollection) {
+
       this.casesCollection.add(
         {
           description: this.addCaseForm.controls['description'].value,
-          title: this.addCaseForm.controls['description'].value,
+          title: this.addCaseForm.controls['title'].value,
           defendant: {},
           plaintiff: {},
           status: '',
