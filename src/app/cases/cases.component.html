@@ -1,4 +1,4 @@
-<igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="6">
+<igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="50">
   <igx-column [field]="'title'" [sortable]="true" [header]="'Title'" [filtering]="true"></igx-column>
   <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
   <igx-column [field]="'winProbability'" [header]="'Win Probability'">
@@ -15,7 +15,7 @@
       <button class="badge-container" igxButton="raised"  igxButtonBackground="#4CAF50"
               *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
               [routerLink]="['/lawyers', item.uid]">
-        {{item.name}}
+       {{ item.name }}}
         <igx-badge position="bottom-left" *ngIf="casesData[ri].status == item?.uid" icon="lock_open"></igx-badge>
       </button>
       <button (click)="cancelDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"
@@ -30,7 +30,7 @@
       <button class="badge-container" igxButton="raised"  igxButtonBackground="#F44336"
               *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
               [routerLink]="['/lawyers', item.uid]">
-        {{item.name}}
+       {{ item.name }}}
         <igx-badge position="bottom-left" *ngIf="item && casesData[ri].status == item?.uid" icon="lock_outline"></igx-badge>
       </button>
       <button (click)="cancelPlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336"
@@ -38,5 +38,34 @@
     </ng-template>
   </igx-column>
 </igx-grid>
+<igx-card-actions>
+  <button [ngStyle]="{'display': (casesData.length > 50) ? 'none' : 'inline-block'}"
+          [disabled]="!currentUser" (click)="openAddCase()" class="add-case" igxButton="raised">Add case</button>
+</igx-card-actions>
 
 <igx-toast #toast message="Successfully updated!"></igx-toast>
+
+<igx-dialog #addCase
+            title="Create case"
+            closeOnOutsideSelect="true">
+
+  <form *ngIf="addCaseForm" [formGroup]="addCaseForm" (ngSubmit)="onAddCaseSubmit()" class="lawyer-profile-form">
+    <div class="igx-form-group">
+      <input igxInput formControlName="title" type="text" name="description" id="title"
+             required="required"/>
+      <label igxLabel for="title">Title*</label>
+    </div>
+    <div class="igx-form-group">
+      <input igxInput formControlName="description" type="text" name="description" id="description"
+             required="required"/>
+      <label igxLabel for="description">Description*</label>
+    </div>
+    <igx-card-actions>
+      <button type="button" (click)="closeAddCase()" igxButton="raised">Cancel</button>
+    </igx-card-actions>
+    <igx-card-actions>
+      <button [disabled]="!addCaseForm.valid" type="submit" igxButton="raised">Create</button>
+    </igx-card-actions>
+  </form>
+
+</igx-dialog>

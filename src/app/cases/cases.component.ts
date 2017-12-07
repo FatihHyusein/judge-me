@@ -3,9 +3,11 @@ import { Observable } from 'rxjs/Observable';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { CaseModel } from './CaseModel';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { IgxToast } from 'igniteui-js-blocks/main';
+import {IgxDialog, IgxToast} from 'igniteui-js-blocks/main';
 import {User} from 'firebase';
 import {CasesService} from './cases.service';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import * as firebase from 'firebase/app';
 
 @Component({
   templateUrl: './cases.component.html',
@@ -13,12 +15,14 @@ import {CasesService} from './cases.service';
 })
 export class CasesComponent {
   @ViewChild('toast') toast: IgxToast;
+  @ViewChild('addCase') addCaseDialog: IgxDialog;
   casesCollection: AngularFirestoreCollection<CaseModel>;
   usersCollection: AngularFirestoreCollection<CaseModel>;
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
   currentUser;
   caseIds: Array<string> = [];
+  addCaseForm: FormGroup;
 
   constructor(private db: AngularFirestore, public afAuth: AngularFireAuth, private casesSrv: CasesService) {
     this.afAuth.auth.onAuthStateChanged((data) => {
@@ -42,7 +46,69 @@ export class CasesComponent {
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
         this.casesSrv.updateLawyerStats(caseItemData, this.usersCollection);
       });
+
+      this.usersCollection.snapshotChanges().subscribe(userData => {
+        userData.forEach(userItem => {
+          const userItemData = userItem.payload.doc.data();
+          const userUid = userItem.payload.doc.id;
+
+          if (userItemData.cases) {
+            const userCases = userItemData.cases;
+            const casesNames = this.casesData.map(element => {
+              return element.id;
+            });
+
+            Object.keys(userCases).forEach(caseName => {
+              if (casesNames.indexOf(caseName) === -1) {
+                const userRef = this.usersCollection.doc(userUid);
+                userRef.update({
+                  cases: firebase.firestore.FieldValue.delete()
+                });
+              }
+            });
+          }
+
+        });
+      });
+
     });
+
+    this.createAddCaseForm();
+  }
+
+  openAddCase() {
+    this.addCaseDialog.open();
+  }
+
+  closeAddCase() {
+    this.addCaseDialog.close();
+    this.addCaseForm.reset();
+  }
+
+  createAddCaseForm() {
+    this.addCaseForm = new FormGroup({
+      description: new FormControl('', Validators.required),
+      title: new FormControl('', Validators.required),
+    });
+  }
+
+  onAddCaseSubmit() {
+    if (this.casesCollection) {
+
+      this.casesCollection.add(
+        {
+          description: this.addCaseForm.controls['description'].value,
+          title: this.addCaseForm.controls['title'].value,
+          defendant: {},
+          plaintiff: {},
+          status: '',
+          winProbability: Math.floor((Math.random() * 100) + 1)
+        })
+        .then(() => {
+          this.addCaseDialog.close();
+          this.addCaseForm.reset();
+        });
+    }
   }
 
   beDefendant(caseRow) {
