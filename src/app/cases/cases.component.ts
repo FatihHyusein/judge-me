@@ -4,10 +4,10 @@ import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } fr
 import { CaseModel } from './CaseModel';
 import { AngularFireAuth } from 'angularfire2/auth';
 import {IgxDialog, IgxToast} from 'igniteui-js-blocks/main';
-import {User} from 'firebase';
 import {CasesService} from './cases.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import * as firebase from 'firebase/app';
+import {LawyerModel} from '../lawyers/LawyerModel';
 
 @Component({
   templateUrl: './cases.component.html',
@@ -17,7 +17,7 @@ export class CasesComponent {
   @ViewChild('toast') toast: IgxToast;
   @ViewChild('addCase') addCaseDialog: IgxDialog;
   casesCollection: AngularFirestoreCollection<CaseModel>;
-  usersCollection: AngularFirestoreCollection<CaseModel>;
+  usersCollection: AngularFirestoreCollection<LawyerModel>;
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
   currentUser;
@@ -44,36 +44,45 @@ export class CasesComponent {
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
-        this.casesSrv.updateLawyerStats(caseItemData, this.usersCollection);
       });
 
-      this.usersCollection.snapshotChanges().subscribe(userData => {
-        userData.forEach(userItem => {
-          const userItemData = userItem.payload.doc.data();
-          const userUid = userItem.payload.doc.id;
+      this.usersCollection.ref.get()
+        .then(userData => {
+          userData.forEach(userItem => {
+            const userItemData = userItem.data();
+            const userUid = userItem.id;
 
-          if (userItemData.cases) {
-            const userCases = userItemData.cases;
-            const casesNames = this.casesData.map(element => {
-              return element.id;
-            });
+            if (userItemData.cases) {
+              const userCases = userItemData.cases;
+              const casesNames = this.casesData.map(element => element.id);
 
-            Object.keys(userCases).forEach(caseName => {
-              if (casesNames.indexOf(caseName) === -1) {
-                const userRef = this.usersCollection.doc(userUid);
-                userRef.update({
-                  cases: firebase.firestore.FieldValue.delete()
-                });
-              }
-            });
-          }
+              Object.keys(userCases).forEach(caseName => {
+                if (casesNames.indexOf(caseName) === -1) {
+                  const userRef = this.usersCollection.doc(userUid);
+                  userRef.update({
+                    cases: firebase.firestore.FieldValue.delete()
+                  })
+                    .then(() => {
+                      this.updateLawyerStats();
+                    });
+                }
+              });
+            }
 
-        });
+          });
       });
+
+      this.updateLawyerStats();
 
     });
 
     this.createAddCaseForm();
+  }
+
+  updateLawyerStats() {
+    this.casesData.forEach(caseItemData => {
+      this.casesSrv.updateLawyer(caseItemData, this.usersCollection);
+    });
   }
 
   openAddCase() {

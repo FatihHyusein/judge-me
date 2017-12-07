@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AngularFirestoreCollection} from 'angularfire2/firestore';
-import {CaseModel} from './CaseModel';
+import {LawyerModel} from '../lawyers/LawyerModel';
 
 @Injectable()
 
@@ -8,7 +8,7 @@ export class CasesService {
 
   constructor() {}
 
-  updateLawyerStats(caseItemData, usersCollection: AngularFirestoreCollection<CaseModel>) {
+  updateLawyer(caseItemData, usersCollection: AngularFirestoreCollection<LawyerModel>) {
 
     if (caseItemData.status) {
       const defendant = usersCollection.doc(caseItemData.defendant.uid);
