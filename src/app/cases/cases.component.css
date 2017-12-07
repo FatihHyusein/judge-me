@@ -1,3 +1,9 @@
 .badge-container {
   overflow: initial;
 }
+
+.add-case {
+  display: inline-block;
+  float: right;
+  margin-right: 30px;
+}

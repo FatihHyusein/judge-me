@@ -1,4 +1,4 @@
-<igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="6">
+<igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="1">
   <igx-column [field]="'title'" [sortable]="true" [header]="'Title'" [filtering]="true"></igx-column>
   <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
   <igx-column [field]="'winProbability'" [header]="'Win Probability'">
@@ -38,5 +38,33 @@
     </ng-template>
   </igx-column>
 </igx-grid>
+<igx-card-actions>
+  <button [disabled]="!currentUser" (click)="openAddCase()" class="add-case" igxButton="raised">Add case</button>
+</igx-card-actions>
 
 <igx-toast #toast message="Successfully updated!"></igx-toast>
+
+<igx-dialog #addCase
+            title="Create case"
+            closeOnOutsideSelect="true">
+
+  <form *ngIf="addCaseForm" [formGroup]="addCaseForm" (ngSubmit)="onAddCaseSubmit()" class="lawyer-profile-form">
+    <div class="igx-form-group">
+      <input igxInput formControlName="title" type="text" name="description" id="title"
+             required="required"/>
+      <label igxLabel for="title">Title*</label>
+    </div>
+    <div class="igx-form-group">
+      <input igxInput formControlName="description" type="text" name="description" id="description"
+             required="required"/>
+      <label igxLabel for="description">Description*</label>
+    </div>
+    <igx-card-actions>
+      <button (click)="closeAddCase()" igxButton="raised">Cancel</button>
+    </igx-card-actions>
+    <igx-card-actions>
+      <button [disabled]="!addCaseForm.valid" type="submit" igxButton="raised">Create</button>
+    </igx-card-actions>
+  </form>
+
+</igx-dialog>
