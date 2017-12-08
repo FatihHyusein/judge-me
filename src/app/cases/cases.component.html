@@ -15,7 +15,7 @@
       <button class="badge-container" igxButton="raised"  igxButtonBackground="#4CAF50"
               *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
               [routerLink]="['/lawyers', item.uid]">
-       {{ item.name }}}
+       {{ item.name }}
         <igx-badge position="bottom-left" *ngIf="casesData[ri].status == item?.uid" icon="lock_open"></igx-badge>
       </button>
       <button (click)="cancelDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"
