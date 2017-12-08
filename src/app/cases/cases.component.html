@@ -30,7 +30,7 @@
       <button class="badge-container" igxButton="raised"  igxButtonBackground="#F44336"
               *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
               [routerLink]="['/lawyers', item.uid]">
-       {{ item.name }}}
+       {{ item.name }}
         <igx-badge position="bottom-left" *ngIf="item && casesData[ri].status == item?.uid" icon="lock_outline"></igx-badge>
       </button>
       <button (click)="cancelPlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336"
