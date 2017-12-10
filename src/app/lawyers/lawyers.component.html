@@ -1,35 +1,37 @@
-<div class="cards-container">
-  <igx-card *ngFor="let lawyer of lawyers$ | async">
-    <igx-card-header>
-      <igx-avatar [src]="lawyer.photoURL" roundShape="true">
-      </igx-avatar>
-      <span class="name-container">{{ lawyer.displayName || lawyer.email }}</span>
-    </igx-card-header>
-    <igx-card-content>
-      <div class="chart-container">
-        <canvas baseChart
-                [data]="[lawyer.wins, lawyer.loses]"
-                [labels]="['Wins', 'Loses']"
-                [chartType]="'doughnut'"
-        ></canvas>
-      </div>
-    </igx-card-content>
-    <igx-card-actions>
-      <button igxButton [attr.title]="lawyer.email" (click)="confirmAction({action: sendMail, data: lawyer.email})">
-        <igx-icon fontSet="material" name="email"></igx-icon> <div class="action-btn-label">{{ lawyer.email || 'not available'}}</div>
-      </button>
-      <button igxButton [attr.title]="lawyer.phoneNumber" [disabled]="!lawyer.phoneNumber" (click)="confirmAction({action: startPhoneCall, data: lawyer.phoneNumber})">
-        <igx-icon fontSet="material" name="call"></igx-icon> <div class="action-btn-label">{{ lawyer.phoneNumber || 'not available' }}</div>
-      </button>
-    </igx-card-actions>
-  </igx-card>
-</div>
+<ng-container *ngIf="lawyersData.length">
+  <div class="cards-container">
+    <igx-card *ngFor="let lawyer of lawyersData">
+      <igx-card-header>
+        <igx-avatar [src]="lawyer.photoURL" roundShape="true">
+        </igx-avatar>
+        <span class="name-container">{{ lawyer.displayName || lawyer.email }}</span>
+      </igx-card-header>
+      <igx-card-content>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="[lawyer.wins, lawyer.loses]"
+                  [labels]="['Wins', 'Loses']"
+                  [chartType]="'doughnut'"
+          ></canvas>
+        </div>
+      </igx-card-content>
+      <igx-card-actions>
+        <button igxButton [attr.title]="lawyer.email" (click)="confirmAction({action: sendMail, data: lawyer.email})">
+          <igx-icon fontSet="material" name="email"></igx-icon> <div class="action-btn-label">{{ lawyer.email || 'not available'}}</div>
+        </button>
+        <button igxButton [attr.title]="lawyer.phoneNumber" [disabled]="!lawyer.phoneNumber" (click)="confirmAction({action: startPhoneCall, data: lawyer.phoneNumber})">
+          <igx-icon fontSet="material" name="call"></igx-icon> <div class="action-btn-label">{{ lawyer.phoneNumber || 'not available' }}</div>
+        </button>
+      </igx-card-actions>
+    </igx-card>
+  </div>
 
-<div class="snackbar-container">
-  <igx-snackbar #snackbar
-                message="Please, confirm your action"
-                autoHide="true"
-                actionText="OK"
-                (onAction)="callConfirmedAction()">
-  </igx-snackbar>
-</div>
+  <div class="snackbar-container">
+    <igx-snackbar #snackbar
+                  message="Please, confirm your action"
+                  autoHide="true"
+                  actionText="OK"
+                  (onAction)="callConfirmedAction()">
+    </igx-snackbar>
+  </div>
+</ng-container>

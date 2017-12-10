@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import {AngularFirestore, AngularFirestoreCollection, DocumentChangeAction} from 'angularfire2/firestore';
 import { LawyerModel } from './LawyerModel';
 import { Observable } from 'rxjs/Observable';
 import { IgxSnackbar } from 'igniteui-js-blocks/main';
@@ -13,14 +13,17 @@ export class LawyersComponent {
   @ViewChild('snackbar') snackbar: IgxSnackbar;
   pendingAction;
   lawyersCollection: AngularFirestoreCollection<LawyerModel>;
-  lawyers$: Observable<LawyerModel[]>;
+  lawyers$: Observable<DocumentChangeAction[]>;
+  lawyersData = [];
+
 
   constructor(private db: AngularFirestore) {
     this.lawyersCollection = db.collection('users');
-    this.lawyers$ = this.lawyersCollection.valueChanges();
-
-    // collection.update(data)
-    // collection.delete()
+    this.lawyers$ = this.lawyersCollection.snapshotChanges();
+    this.lawyers$
+      .subscribe(data => {
+        this.lawyersData = data.map(itemeData => itemeData.payload.doc.data());
+      });
   }
 
   sendMail(email) {

@@ -46,43 +46,14 @@ export class CasesComponent {
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
       });
 
-      this.usersCollection.ref.get()
-        .then(userData => {
-          userData.forEach(userItem => {
-            const userItemData = userItem.data();
-            const userUid = userItem.id;
-
-            if (userItemData.cases) {
-              const userCases = userItemData.cases;
-              const casesNames = this.casesData.map(element => element.id);
-
-              Object.keys(userCases).forEach(caseName => {
-                if (casesNames.indexOf(caseName) === -1) {
-                  const userRef = this.usersCollection.doc(userUid);
-                  userRef.update({
-                    cases: firebase.firestore.FieldValue.delete()
-                  })
-                    .then(() => {
-                      this.updateLawyerStats();
-                    });
-                }
-              });
-            }
-
-          });
+      this.casesSrv.removeUserCases(this.usersCollection, this.casesData);
+      this.casesData.forEach(caseItemData => {
+        this.casesSrv.updateLawyer(caseItemData, this.usersCollection);
       });
-
-      this.updateLawyerStats();
 
     });
 
     this.createAddCaseForm();
-  }
-
-  updateLawyerStats() {
-    this.casesData.forEach(caseItemData => {
-      this.casesSrv.updateLawyer(caseItemData, this.usersCollection);
-    });
   }
 
   openAddCase() {
