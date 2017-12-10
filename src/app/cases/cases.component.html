@@ -1,5 +1,5 @@
 <ng-container *ngIf="casesData.length">
-  <igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="50">
+  <igx-grid #grid1 [data]="casesData" [autoGenerate]="false" [paging]="true" [perPage]="4">
     <igx-column [field]="'title'" [sortable]="true" [header]="'Title'" [filtering]="true"></igx-column>
     <igx-column [field]="'description'" [sortable]="true" [header]="'Description'"></igx-column>
     <igx-column [field]="'winProbability'" [header]="'Win Probability'">
@@ -10,40 +10,39 @@
     </igx-column>
     <igx-column [field]="'defendant'" [sortable]="true" [header]="'Defendant'">
       <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
-        <button (click)="beDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"
-                *ngIf="!casesData[ri]?.status && !item?.uid"
-                [disabled]="!currentUser || casesData[ri].plaintiff?.uid == afAuth.auth?.currentUser?.uid">Be the defendant</button>
+        <button (click)="beDefendant(item.caseId)" igxButton="raised"  igxButtonBackground="#4CAF50"
+                *ngIf="!item?.caseStatus && !item?.uid"
+                [disabled]="!currentUser || item?.plaintiff?.uid === currentUser?.uid">Be the defendant</button>
         <button class="badge-container" igxButton="raised"  igxButtonBackground="#4CAF50"
-                *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
+                *ngIf="item?.caseStatus || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid !== currentUser?.uid)"
                 [routerLink]="['/lawyers', item.uid]">
          {{ item.name }}
-          <igx-badge position="bottom-left" *ngIf="casesData[ri].status == item?.uid" icon="lock_open"></igx-badge>
+          <igx-badge position="bottom-left" *ngIf="item && item.caseStatus === item.uid" icon="lock_open"></igx-badge>
         </button>
-        <button (click)="cancelDefendant(ri)" igxButton="raised"  igxButtonBackground="#4CAF50"
-                *ngIf="!casesData[ri]?.status && currentUser && item?.uid && item?.uid == currentUser?.uid">Cancel</button>
+        <button (click)="cancelDefendant(item.caseId)" igxButton="raised"  igxButtonBackground="#4CAF50"
+                *ngIf="!item?.caseStatus && currentUser && item?.uid && item?.uid === currentUser?.uid">Cancel</button>
       </ng-template>
     </igx-column>
     <igx-column [field]="'plaintiff'" [sortable]="true" [header]="'Plaintiff'">
       <ng-template igxCell let-col="column" let-ri="rowIndex" let-item="item">
-        <button (click)="bePlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336"
-                *ngIf="!casesData[ri]?.status && !item?.uid"
-                [disabled]="!currentUser || casesData[ri]?.defendant?.uid == afAuth.auth?.currentUser?.uid">Be the plaintiff</button>
+        <button (click)="bePlantiff(item.caseId)" igxButton="raised"  igxButtonBackground="#F44336"
+                *ngIf="!item?.caseStatus && !item?.uid"
+                [disabled]="!currentUser || item?.defendant?.uid === currentUser?.uid">Be the plaintiff</button>
         <button class="badge-container" igxButton="raised"  igxButtonBackground="#F44336"
-                *ngIf="casesData[ri]?.status || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid != currentUser?.uid)"
+                *ngIf="item?.caseStatus || (!currentUser && item?.uid) || (currentUser && item?.uid && item?.uid !== currentUser?.uid)"
                 [routerLink]="['/lawyers', item.uid]">
          {{ item.name }}
-          <igx-badge position="bottom-left" *ngIf="item && casesData[ri].status == item?.uid" icon="lock_outline"></igx-badge>
+          <igx-badge position="bottom-left" *ngIf="item && item.caseStatus === item.uid" icon="lock_outline"></igx-badge>
         </button>
-        <button (click)="cancelPlantiff(ri)" igxButton="raised"  igxButtonBackground="#F44336"
-                *ngIf="!casesData[ri]?.status && currentUser && item?.uid  && item?.uid == currentUser?.uid">Cancel</button>
+        <button (click)="cancelPlantiff(item.caseId)" igxButton="raised"  igxButtonBackground="#F44336"
+                *ngIf="!item?.caseStatus && currentUser && item?.uid  && item?.uid === currentUser?.uid">Cancel</button>
       </ng-template>
     </igx-column>
   </igx-grid>
 </ng-container>
 
 <igx-card-actions>
-  <button [ngStyle]="{'display': (casesData.length > 50) ? 'none' : 'inline-block'}"
-          [disabled]="!currentUser" (click)="openAddCase()" class="add-case" igxButton="raised">Add case</button>
+  <button [disabled]="!currentUser" (click)="openAddCase()" class="add-case" igxButton="raised">Add case</button>
 </igx-card-actions>
 
 <igx-toast #toast message="Successfully updated!"></igx-toast>

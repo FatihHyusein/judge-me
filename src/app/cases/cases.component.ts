@@ -21,7 +21,6 @@ export class CasesComponent {
   cases$: Observable<DocumentChangeAction[]>;
   casesData = [];
   currentUser;
-  caseIds: Array<string> = [];
   addCaseForm: FormGroup;
 
   constructor(private db: AngularFirestore, public afAuth: AngularFireAuth, private casesSrv: CasesService) {
@@ -39,10 +38,10 @@ export class CasesComponent {
     this.cases$ = this.casesCollection.snapshotChanges();
     this.cases$.subscribe(data => {
       this.casesData = [];
-      this.caseIds = [];
 
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
+        this.prepareCaseData(caseItemData);
         this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
       });
 
@@ -54,6 +53,21 @@ export class CasesComponent {
     });
 
     this.createAddCaseForm();
+  }
+
+  prepareCaseData(caseItemData) {
+    caseItemData.defendant.caseStatus = caseItemData.status;
+    caseItemData.plaintiff.caseStatus = caseItemData.status;
+    caseItemData.defendant.caseId = caseItemData.id;
+    caseItemData.plaintiff.caseId = caseItemData.id;
+
+    caseItemData.defendant.plaintiff = {
+      uid: caseItemData.plaintiff ? caseItemData.plaintiff.uid : ''
+    };
+
+    caseItemData.plaintiff.defendant = {
+      uid: caseItemData.defendant ? caseItemData.defendant.uid : ''
+    };
   }
 
   openAddCase() {
@@ -91,28 +105,28 @@ export class CasesComponent {
     }
   }
 
-  beDefendant(caseRow) {
+  beDefendant(caseId) {
     if (this.currentUser) {
-      this.getCaseSide(caseRow, 'defendant');
+      this.getCaseSide(caseId, 'defendant');
     }
   }
 
-  bePlantiff(caseRow) {
+  bePlantiff(caseId) {
     if (this.currentUser) {
-      this.getCaseSide(caseRow, 'plaintiff');
+      this.getCaseSide(caseId, 'plaintiff');
     }
   }
 
-  cancelDefendant(caseRow) {
-    this.cancelCaseSide(caseRow, 'defendant');
+  cancelDefendant(caseId) {
+    this.cancelCaseSide(caseId, 'defendant');
   }
 
-  cancelPlantiff(caseRow) {
-    this.cancelCaseSide(caseRow, 'plaintiff');
+  cancelPlantiff(caseId) {
+    this.cancelCaseSide(caseId, 'plaintiff');
   }
 
-  getCaseSide(caseRow, side) {
-    this.casesCollection.doc(this.casesData[caseRow].id).set(Object.assign(this.casesData[caseRow], {
+  getCaseSide(caseId, side) {
+    this.casesCollection.doc(caseId).set(Object.assign(this.casesData.find(element => element.id === caseId), {
       [side]: {
         uid: this.currentUser.uid,
         name: this.currentUser.displayName || this.afAuth.auth.currentUser.email
@@ -126,8 +140,8 @@ export class CasesComponent {
       });
   }
 
-  cancelCaseSide(caseRow, side) {
-    this.casesCollection.doc(this.casesData[caseRow].id).set(Object.assign(this.casesData[caseRow], {
+  cancelCaseSide(caseId, side) {
+    this.casesCollection.doc(caseId).set(Object.assign(this.casesData.find(element => element.id === caseId), {
       [side]: {
         uid: '',
         name: ''
