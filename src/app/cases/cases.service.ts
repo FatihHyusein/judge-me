@@ -29,24 +29,29 @@ export class CasesService {
       .then(() => {
         lawyer.ref.get()
           .then(newDoc => {
-            const laywerCases = newDoc.data().cases;
-            let wins = 0;
-            let loses = 0;
+            const laweyerData = newDoc.data();
 
-            Object.keys(laywerCases).forEach(propName => {
-              if (laywerCases[propName] === 'wins') {
-                wins++;
-              }
-              if (laywerCases[propName] === 'loses') {
-                loses++;
-              }
-            });
+            if (laweyerData.cases) {
+              const laywerCases = newDoc.data().cases;
+              let wins = 0;
+              let loses = 0;
 
-            lawyer.set(
-              {
-                wins: wins,
-                loses: loses
-              }, {merge: true});
+              Object.keys(laywerCases).forEach(propName => {
+                if (laywerCases[propName] === 'wins') {
+                  wins++;
+                }
+                if (laywerCases[propName] === 'loses') {
+                  loses++;
+                }
+              });
+
+              lawyer.set(
+                {
+                  wins: wins,
+                  loses: loses
+                }, {merge: true});
+            }
+
           });
       });
   }
