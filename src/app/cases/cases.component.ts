@@ -41,8 +41,9 @@ export class CasesComponent {
 
       data.forEach((caseItem) => {
         const caseItemData = caseItem.payload.doc.data();
-        this.prepareCaseData(caseItemData);
-        this.casesData.push(Object.assign({ id: caseItem.payload.doc.id }, caseItemData));
+        const caseItemDataWithId = Object.assign({ id: caseItem.payload.doc.id }, caseItemData);
+        this.prepareCaseData(caseItemDataWithId);
+        this.casesData.push(caseItemDataWithId);
       });
 
       this.casesSrv.removeUserCases(this.usersCollection, this.casesData);
@@ -56,18 +57,37 @@ export class CasesComponent {
   }
 
   prepareCaseData(caseItemData) {
-    caseItemData.defendant.caseStatus = caseItemData.status;
-    caseItemData.plaintiff.caseStatus = caseItemData.status;
-    caseItemData.defendant.caseId = caseItemData.id;
-    caseItemData.plaintiff.caseId = caseItemData.id;
+    if (!caseItemData.defendant) {
+      caseItemData.defendant = {
+        caseStatus: caseItemData.status,
+        caseId: caseItemData.id,
+        plaintiff: {
+          uid: caseItemData.plaintiff ? caseItemData.plaintiff.uid || '' : ''
+        }
+      };
+    } else {
+      caseItemData.defendant.caseStatus = caseItemData.status;
+      caseItemData.defendant.caseId = caseItemData.id;
+      caseItemData.defendant.plaintiff = {
+        uid: caseItemData.plaintiff ? caseItemData.plaintiff.uid || '' : ''
+      };
+    }
 
-    caseItemData.defendant.plaintiff = {
-      uid: caseItemData.plaintiff ? caseItemData.plaintiff.uid : ''
-    };
-
-    caseItemData.plaintiff.defendant = {
-      uid: caseItemData.defendant ? caseItemData.defendant.uid : ''
-    };
+    if (!caseItemData.plaintiff) {
+      caseItemData.plaintiff = {
+        caseStatus: caseItemData.status,
+        caseId: caseItemData.id,
+        defendant: {
+          uid: caseItemData.defendant ? caseItemData.defendant.uid || '' : ''
+        }
+      };
+    } else {
+      caseItemData.plaintiff.caseStatus = caseItemData.status;
+      caseItemData.plaintiff.caseId = caseItemData.id;
+      caseItemData.plaintiff.defendant = {
+        uid: caseItemData.defendant ? caseItemData.defendant.uid || '' : ''
+      };
+    }
   }
 
   openAddCase() {
@@ -126,12 +146,12 @@ export class CasesComponent {
   }
 
   getCaseSide(caseId, side) {
-    this.casesCollection.doc(caseId).set(Object.assign(this.casesData.find(element => element.id === caseId), {
-      [side]: {
-        uid: this.currentUser.uid,
-        name: this.currentUser.displayName || this.afAuth.auth.currentUser.email
-      }
-    }))
+    const opositeSide = side === 'defendant' ? 'plaintiff' : 'defendant';
+    const caseItem = this.casesData.find(element => element.id === caseId);
+    Object.assign(caseItem[side], {uid: this.currentUser.uid, name: this.currentUser.displayName || this.currentUser.email});
+    Object.assign(caseItem[opositeSide], {[side]: {uid: this.currentUser.uid}});
+
+    this.casesCollection.doc(caseId).set(caseItem)
       .then(() => {
         this.toast.show();
       })
@@ -141,12 +161,13 @@ export class CasesComponent {
   }
 
   cancelCaseSide(caseId, side) {
-    this.casesCollection.doc(caseId).set(Object.assign(this.casesData.find(element => element.id === caseId), {
-      [side]: {
-        uid: '',
-        name: ''
-      }
-    }))
+    const opositeSide = side === 'defendant' ? 'plaintiff' : 'defendant';
+    const caseItem = this.casesData.find(element => element.id === caseId);
+    caseItem[side].uid = '';
+    caseItem[side].name = '';
+    caseItem[opositeSide][side].uid = '';
+
+    this.casesCollection.doc(caseId).set(Object.assign(caseItem))
       .then(() => {
         this.toast.show();
       })
