@@ -148,11 +148,14 @@ export class CasesComponent {
   getCaseSide(caseId, side) {
     const opositeSide = side === 'defendant' ? 'plaintiff' : 'defendant';
     const caseItem = this.casesData.find(element => element.id === caseId);
-    Object.assign(caseItem[side], {uid: this.currentUser.uid, name: this.currentUser.displayName || this.currentUser.email});
-    Object.assign(caseItem[opositeSide], {[side]: {uid: this.currentUser.uid}});
 
-    this.casesCollection.doc(caseId).set(caseItem)
+    this.casesCollection.doc(caseId).set({
+      [side]: {uid: this.currentUser.uid, name: this.currentUser.displayName || this.currentUser.email},
+      [opositeSide]: {[side]: {uid: this.currentUser.uid}}
+      }, {merge: true})
       .then(() => {
+        Object.assign(caseItem[side], {uid: this.currentUser.uid, name: this.currentUser.displayName || this.currentUser.email});
+        Object.assign(caseItem[opositeSide], {[side]: {uid: this.currentUser.uid}});
         this.toast.show();
       })
       .catch(error => {
@@ -163,12 +166,15 @@ export class CasesComponent {
   cancelCaseSide(caseId, side) {
     const opositeSide = side === 'defendant' ? 'plaintiff' : 'defendant';
     const caseItem = this.casesData.find(element => element.id === caseId);
-    caseItem[side].uid = '';
-    caseItem[side].name = '';
-    caseItem[opositeSide][side].uid = '';
 
-    this.casesCollection.doc(caseId).set(Object.assign(caseItem))
+    this.casesCollection.doc(caseId).set({
+      [side]: {uid: '', name: ''},
+      [opositeSide]: {[side]: {uid: ''}}
+    }, {merge: true})
       .then(() => {
+        caseItem[side].uid = '';
+        caseItem[side].name = '';
+        caseItem[opositeSide][side].uid = '';
         this.toast.show();
       })
       .catch(error => {
